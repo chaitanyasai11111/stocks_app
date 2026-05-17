@@ -1,5 +1,5 @@
 {
-  "name": "stocks_app",
+  "name": "stocks-tracker",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,10 +14,10 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "inngest": "^3.52.6",
+    "inngest": "^4.4.0",
     "lucide-react": "^0.575.0",
-    "mongodb": "^7.1.0",
-    "mongoose": "^9.2.4",
+    "mongodb": "^7.2.0",
+    "mongoose": "^9.6.2",
     "next": "16.1.6",
     "next-themes": "^0.4.6",
     "nodemailer": "^8.0.1",
