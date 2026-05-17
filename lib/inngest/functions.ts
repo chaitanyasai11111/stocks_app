@@ -9,8 +9,10 @@ import {getFormattedTodayDate} from "@/lib/utils";
 type UserForNewsEmail = Awaited<ReturnType<typeof getAllUsersForNewsEmail>>[number];
 
 export const sendSignUpEmail = inngest.createFunction(
-    { id: 'sign-up-email' },
-    { event: 'app/user.created'},
+    {
+        id: 'sign-up-email',
+        triggers: [{ event: 'app/user.created' }],  // ✅ triggers moved into config
+    },
     async ({ event, step }) => {
         const userProfile = `
             - Country: ${event.data.country}
@@ -52,8 +54,10 @@ export const sendSignUpEmail = inngest.createFunction(
 )
 
 export const sendDailyNewsSummary = inngest.createFunction(
-    { id: 'daily-news-summary' },
-    [ { event: 'app/send.daily.news' }, { cron: '0 12 * * *' } ],
+    {
+        id: 'daily-news-summary',
+        triggers: [{ event: 'app/send.daily.news' }, { cron: '0 12 * * *' }],  // ✅ triggers moved into config
+    },
     async ({ step }) => {
         // Step #1: Get all users for news delivery
         const users = await step.run('get-all-users', getAllUsersForNewsEmail)
@@ -83,7 +87,7 @@ export const sendDailyNewsSummary = inngest.createFunction(
             return perUser;
         });
 
-        // Step #3: (placeholder) Summarize news via AI
+        // Step #3: Summarize news via AI
         const userNewsSummaries: { user: UserForNewsEmail; newsContent: string | null }[] = [];
 
         for (const { user, articles } of results) {
@@ -107,7 +111,7 @@ export const sendDailyNewsSummary = inngest.createFunction(
             }
         }
 
-        // Step #4: (placeholder) Send the emails
+        // Step #4: Send the emails
         await step.run('send-news-emails', async () => {
             await Promise.all(
                 userNewsSummaries.map(async ({ user, newsContent}) => {
