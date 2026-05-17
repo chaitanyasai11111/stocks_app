@@ -1,38 +1,138 @@
 # Stocks Tracker
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Project Overview
+Stocks Tracker is a Next.js-based web application designed to help users track their favorite stocks effortlessly. With real-time market news and personalized watchlists, it acts as a smart trading assistant tailored for both new and experienced investors. The app utilizes Finnhub API for financial data, better-auth for secure authentication, and Inngest for intelligent background workflows like personalized onboarding and daily AI-summarized market news.
+
+## Live Demo
+The app is deployed and live at: [https://my-stocks-tracker.vercel.app/](https://my-stocks-tracker.vercel.app/)
+
+## Tech Stack
+- **Framework**: Next.js 16+ (App Router)
+- **Database**: MongoDB (Mongoose)
+- **Authentication**: `better-auth`
+- **Background Jobs**: Inngest
+- **Financial Data API**: Finnhub API
+- **AI Integration**: Google Gemini API (`gemini-2.5-flash-lite`)
+- **Styling**: Tailwind CSS 4 & `tw-animate-css`
+- **Email Service**: Nodemailer
+- **UI Components**: shadcn/ui & Lucide React
+
+## Features
+- **Secure User Authentication**: Robust sign-up and login flow using `better-auth`.
+- **Personalized Onboarding**: AI-generated welcome emails customized to user's investment goals, risk tolerance, and preferred industry.
+- **Stock Search & Discovery**: Real-time stock search and popular stocks fetching via Finnhub API.
+- **Custom Watchlists**: Users can add and manage their favorite stocks in their personal watchlist.
+- **Daily AI News Summaries**: Scheduled background jobs (Inngest CRON) fetch relevant news for stocks in the user's watchlist, summarize them using Gemini AI, and send them directly to the user's email via Nodemailer.
+
+## Project Structure
+```
+stocks_app/
+├── app/
+│   ├── (auth)/        # Authentication routes (Sign-up, Sign-in)
+│   ├── (root)/        # Main app layout and core pages
+│   │   ├── stocks/    # Detailed stock view pages
+│   │   └── page.tsx   # Dashboard/Home page
+│   ├── api/           # Next.js API routes (Auth, Inngest, etc.)
+│   ├── globals.css    # Global Tailwind styles
+│   └── layout.tsx     # Root layout & Metadata
+├── components/        # Reusable UI components (shadcn, forms, navigation)
+├── database/
+│   └── models/        # MongoDB schemas (e.g., Watchlist model)
+├── lib/
+│   ├── actions/       # Server actions (auth, user, watchlist, finnhub)
+│   ├── inngest/       # Background job definitions and AI prompts
+│   └── nodemailer/    # Email transport setup and HTML templates
+└── public/            # Static assets (images, icons)
+```
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js (v20+)
+- MongoDB Atlas cluster (or local MongoDB)
+- Finnhub API Key
+- Google Gemini API Key
+- SMTP credentials (e.g., Gmail with App Password) for Nodemailer
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Installation Steps
+
+1. Clone the repository and navigate to the project directory:
+   ```bash
+   git clone <repository_url>
+   cd stocks_app
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Configure Environment Variables (see section below).
+
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Environment Variables
+Create a `.env` file in the root directory. Below is the list of required variables with their descriptions:
+
+```env
+# Application Environment
+NODE_ENV='development'
+NEXT_PUBLIC_BASE_URL='http://localhost:3000'
+
+# Database Configuration
+MONGODB_URI='Your MongoDB connection string'
+
+# Authentication (better-auth)
+BETTER_AUTH_SECRET='A secure random string for signing tokens'
+BETTER_AUTH_URL='http://localhost:3000'
+
+# AI & Third-Party APIs
+GEMINI_API_KEY='Your Google Gemini API Key for AI summaries'
+NEXT_PUBLIC_FINNHUB_API_KEY='Your Finnhub API key for stock data'
+
+# Email Service (Nodemailer)
+NODEMAILER_EMAIL='Your sender email address'
+NODEMAILER_PASSWORD='Your email app password'
+
+# Inngest Development
+INNGEST_DEV=1  # Enables local Inngest development server
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Inngest Setup
+Inngest is used to handle background tasks like sending onboarding emails and scheduling daily market news summaries.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+To test Inngest locally:
+1. Ensure `INNGEST_DEV=1` is in your `.env`.
+2. Start your Next.js app (`npm run dev`).
+3. In a new terminal tab, start the Inngest Dev Server:
+   ```bash
+   npx inngest-cli@latest dev
+   ```
+4. Open the Inngest Dashboard (usually at `http://localhost:8288`). You'll see your registered functions (`sign-up-email`, `daily-news-summary`). You can manually trigger functions or simulate cron events from the dashboard.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Database Setup
+1. Create a MongoDB cluster on [MongoDB Atlas](https://www.mongodb.com/atlas).
+2. Under "Database Access", create a new database user.
+3. Under "Network Access", allow your IP address or `0.0.0.0/0` for universal access.
+4. Go to "Database" > "Connect" > "Connect your application" and copy the connection string.
+5. Replace `<password>` in the connection string and set it as `MONGODB_URI` in your `.env` file.
 
-## Learn More
+## Deployment
+The app is optimized for deployment on Vercel.
 
-To learn more about Next.js, take a look at the following resources:
+1. Push your code to a GitHub repository.
+2. Go to [Vercel](https://vercel.com) and import the repository.
+3. Add all the Environment Variables listed above in the Vercel project settings.
+   - *Note: Ensure `NEXT_PUBLIC_BASE_URL` and `BETTER_AUTH_URL` reflect your production domain.*
+4. Deploy the project.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Syncing Inngest
+In production, you need to sync your Vercel deployment with Inngest Cloud.
+1. Create an account on [Inngest Cloud](https://app.inngest.com).
+2. Get your `INNGEST_EVENT_KEY` and `INNGEST_SIGNING_KEY` and add them to your Vercel environment variables.
+3. When you deploy, Vercel will expose the API route (`/api/inngest`), and Inngest will automatically sync your background functions and CRON jobs.
