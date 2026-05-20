@@ -24,6 +24,13 @@ The app is deployed and live at: [https://my-stocks-tracker.vercel.app/](https:/
 - **Custom Watchlists**: Users can add and manage their favorite stocks in their personal watchlist.
 - **Daily AI News Summaries**: Scheduled background jobs (Inngest CRON) fetch relevant news for stocks in the user's watchlist, summarize them using Gemini AI, and send them directly to the user's email via Nodemailer.
 
+## Watchlist Feature
+The Watchlist is a core feature that allows users to personalize their market tracking experience. It connects seamlessly with the app's database and background jobs to provide a tailored stock monitoring system:
+
+- **Adding & Managing Stocks**: Users can search for stocks via the Finnhub API and add or remove them from their personal watchlist. The UI immediately reflects these changes through interactive button states.
+- **Robust Storage**: Watchlists are stored securely in **MongoDB** using Mongoose. The `WatchlistSchema` stores the user's ID, the stock symbol, company name, and the date added. A unique index on `[userId, symbol]` ensures no duplicate entries exist.
+- **Integration with AI News Summaries**: The watchlist acts as the foundation for the daily news feature. Every day at 12:00 PM (via Inngest CRON), the app fetches the user's saved symbols (using `getWatchlistSymbolsByEmail`), retrieves the latest news specifically for those companies from Finnhub, and summarizes the top articles using Google's Gemini AI before sending them via Nodemailer. If a user's watchlist is empty, it intelligently falls back to general market news.
+
 ## Project Structure
 ```
 stocks_app/

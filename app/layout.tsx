@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Stocks Tracker",
   description: "Track your favorite stocks with ease",
+  icons: {
+    icon: "/assets/icons/logo.svg",
+  },
 };
 
 export default function RootLayout({
